@@ -1,0 +1,40 @@
+var GLOBIOTS_WEBSOCKET_REALTIME_DATA_URI = 'wss://dataengine.globiots.com:443/data-engine/realtime';
+var wsRealtimeData = null;
+var dataRealtimeRequestDataJson = {
+    "updateTime": 30,
+    "timezone": "GMT+07:00",
+    "objects": [
+        {
+            "hostname": "0.0.2.251",
+            "addresses": [
+                {
+                    "address": "2300",
+                    "dataType": "float",
+                    "length": "4"
+                }
+            ]
+        }
+    ]
+};
+try {
+    const WebSocket = require('ws');
+    wsRealtimeData = new WebSocket(GLOBIOTS_WEBSOCKET_REALTIME_DATA_URI);
+    wsRealtimeData.onopen = function (element) {
+        // the message receive when connect to server seccess
+        console.log("Realtime websocket is connected...");
+        wsRealtimeData.send(JSON.stringify(dataRealtimeRequestDataJson));
+        //console.log(wsRealtimeData);
+    };
+
+    wsRealtimeData.onmessage = function (element) {
+        console.log("Response realtime from server to client:: ");
+        var responseRealtimeData = JSON.parse(element.data);
+        console.log(responseRealtimeData);
+    }
+
+    wsRealtimeData.onclose = function (element) {
+        console.warn("GLOBIOTS_WEBSOCKET_REALTIME_DATA close websocket");
+    };
+} catch (ex) {
+    console.warn(ex);
+}
